@@ -1,0 +1,33 @@
+@startuml WarmhouseContext
+title Warmhouse 2.0 Context Diagram to-be
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "User", "Управляет контроллерами, подключает новые устройства, просматривает видеотрансляцию и данные с датчиков")
+Person(admin, "Admin", "Администрирует систему")
+System(WarmhouseSystem, "Warmhouse System", "Система управляет устройствами отопления, света, ворот и видеонаблюдения в доме клиента, мониторит данные с датчиков, биллингует услуги и управляет платежами")
+
+System_Ext(hscontroller, "Heating system controller", "Управляет системой отопления в доме")
+System_Ext(tsensor, "Temperature sensor", "Замеряет текущую температуру в доме")
+System_Ext(lcontroller, "Light system controller", "Управляет системой освещения в доме")
+System_Ext(lsensor, "Light sensor", "Измеряет освещенность")
+System_Ext(gcontroller, "Gate controller", "Открывает или закрывает ворота")
+System_Ext(videoreg, "Video registrator", "Внешняя камера для видеонаблюдения")
+System_Ext(paysystem, "Pay System", "Внешний сервис приема и обработки платежей")
+
+
+Rel(user, WarmhouseSystem, "Включает/выключает отопление, свет, открывает/закрывает ворота; Просматривает видеотрансляцию он-лайн; Подключает новые устройства; Устанавливает желаемую температуру; Просматривает данные о температуре; Оплачивает сервисы")
+Rel(admin,WarmhouseSystem,"Администрирует систему")
+Rel(WarmhouseSystem,hscontroller,"Управляет контроллером отопления, направляет команды пользователя")
+Rel(WarmhouseSystem,tsensor,"Получает информацию о температуре")
+Rel(WarmhouseSystem,lcontroller,"Включает/выключает свет, направляет команды пользователя")
+Rel(WarmhouseSystem,lsensor,"Получает информацию об освещенности")
+Rel(WarmhouseSystem,gcontroller,"Открывает/закрывает ворота, направляет команды пользователя")
+Rel(WarmhouseSystem,videoreg,"Видеотрансляция он-лайн")
+Rel(WarmhouseSystem,paysystem,"Прием и обработка платежей")
+
+
+@enduml
+
