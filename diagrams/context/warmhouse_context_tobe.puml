@@ -15,7 +15,8 @@ System_Ext(lcontroller, "Light system controller", "Управляет сист�
 System_Ext(lsensor, "Light sensor", "Измеряет освещенность")
 System_Ext(gcontroller, "Gate controller", "Открывает или закрывает ворота")
 System_Ext(videoreg, "Video registrator", "Внешняя камера для видеонаблюдения")
-System_Ext(paysystem, "Pay System", "Внешний сервис приема и обработки платежей")
+System_Ext(paysystem, "Payment System", "Внешний сервис приема и обработки платежей")
+System_Ext(sms, "SMS ", "Отправка SMS пользователю")
 
 
 Rel(user, WarmhouseSystem, "Включает/выключает отопление, свет, открывает/закрывает ворота; Просматривает видеотрансляцию он-лайн; Подключает новые устройства; Устанавливает желаемую температуру; Просматривает данные о температуре; Оплачивает сервисы")
@@ -27,6 +28,7 @@ Rel(WarmhouseSystem,lsensor,"Получает информацию об осве
 Rel(WarmhouseSystem,gcontroller,"Открывает/закрывает ворота, направляет команды пользователя")
 Rel(WarmhouseSystem,videoreg,"Видеотрансляция он-лайн")
 Rel(WarmhouseSystem,paysystem,"Прием и обработка платежей")
+Rel(WarmhouseSystem,sms,"Отправка sms-нотификаций пользователю")
 
 
 @enduml
