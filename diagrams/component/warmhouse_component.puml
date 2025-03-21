@@ -1,0 +1,158 @@
+@startuml WarmhouseComponent
+title Warmhouse 2.0 Component Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(WarmhouseSystem, "Warmhouse System") {
+  Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Обработка взаймодействий с пользователем")
+  Container(McFrontends, "Microfrontends/ModuleFederation", "React", "Обработка взаимодействий с пользователями")
+  Container(APIGW, "API GateWay", "Kong", "Обработка и маршрутизация запросов/ответов пользователям")
+  Container(Kafka, "Kafka", "Обеспечение и балансировка внутрисистемного ассинхронного взаимодействия")
+  Container(McRuleHeat, "MicroService Rule Heating", "Node.js", "Обработка запросов пользователей")
+  Container(McRuleLight, "MicroService Rule Light", "Node.js", "Обработка запросов пользователей")
+  Container(McRuleGate, "MicroService Rule Gate", "Node.js", "Обработка запросов пользователей")
+  Container(McContTemp, "MicroService Control Temperature", "Node.js", "Обработка запросов пользователей")
+  Container(McContLight, "MicroService Control Light", "Node.js", "Обработка запросов пользователей")
+  Container(McVideo, "MicroService Video", "Управление видеотрансляцией")
+  Container(McUserProf, "MicroService UserProfile", "Node.js", "Управление данными о пользователях")
+  Container(McUserAAA, "MicroService AAA", "Node.js", "Авторизация, аутентификация и аудит пользователей")
+  Container(McDeviceProf, "MicroService DeviceProfile", "Node.js", "Управление данными о подключенных устройствах и сенсорах")
+  Container(McNotif, "MicroService Notification", "Node.js", "Нотификация пользователю")
+  Container(PaymentService, "Payment Service", "Node.js", "Управление платежами")
+  Container(Adminka, "Administraton", "elasticsearch/grafana", "Логи, мониторинг, метрики, анализ, визуализация")
+}
+
+Container(McFrontends, "Microfrontends/ModuleFederation", "React") {
+  Component(Host, "Host Module Federation", "Host")
+  Component(AuthComp, "AAA Micro Frontend", "Авторизация и аутентификация")
+  Component(UserComp, "User Micro Frontend", "Профиль пользователя")
+  Component(HeatComp, "Heating Micro Frontend", "Управление отоплением")
+  Component(TempComp, "Temperature Micro Frontend", "Градусник")
+  Component(GateComp, "Gate Micro Frontend", "Управление воротами")
+  Component(LightControlComp, "Light Control Micro Frontend", "Управление светом")
+  Component(VideoComp, "Video Micro Frontend", "Видеотрансляция")
+  Component(LightComp, "Light Micro Frontend", "Мониторинг освещения")
+  Component(Payments, "Payments Micro Frontend", "Управление платежами")
+  Component(DevComp, "Devices", "Подключенные устройства")
+}
+
+Container(McRuleHeat, "MicroService Rule Heating", "Node.js") {
+  Component(APIHeat, "API Heatind component", "Маршрутизация команд")
+  Component(HeatRule, "Heating manager", "Обработка команд")
+  Component(HeatStat, "Heating State", "Состояние устройств отопления")
+  Component(HeatRepo, "Repository layer", "Обработка команд чтвения/записи данных")
+  Component(DBHeat, "Heating Database", "PostgreSQL", "Чтение/запись данных")
+}
+
+Container(McContTemp, "MicroService Control Temperature", "Node.js") {
+  Component(APITemp, "API Temperature", "Маршрутизация команд")
+  Component(TempContr, "Temperature Control", "Обработка команд")
+  Component(DBTemp, "Temperature Database", "PostgreSQL", "Чтение/запись данных")
+}
+
+Container(McUserProf, "MicroService UserProfile", "Node.js") {
+  Component(APIUser, "API User", "Маршрутизация команд")
+  Component(UserData, "User Data", "Обработка команд/информации")
+  Component(DBUser, "User Database", "PostgreSQL", "Чтение/запись данных")
+}
+
+Container(McUserAAA, "MicroService AAA", "Node.js") {
+  Component(APIUserAAA, "API UserAAA", "Маршрутизация команд")
+  Component(UserAAA, "User AAA", "Обработка команд/информации")
+  Component(DBUserAAA, "User AAA Database", "PostgreSQL", "Чтение/запись данных")
+}
+
+Container(McDeviceProf, "MicroService DeviceProfile", "Node.js") {
+  Component(APIDevice, "API Device Data", "Маршрутизация команд")
+  Component(DeviceMan, "Device manager", "Обработка команд/информации")
+  Component(DBDevices, "DevicesDatabase", "PostgreSQL", "Чтение/запись данных")
+}
+
+Container(McNotif, "MicroService Notification", "Node.js") {
+  Component(APINotif, "API Notification", "Маршрутизация команд")
+  Component(NotifMan, "Notification manager", "Обработка команд/информации")
+  Component(DBNotif, "Notification Database", "PostgreSQL", "Чтение/запись данных")
+}
+
+Container(PaymentService, "Payment Service", "Node.js") {
+  Component(APIPayment, "API Payment", "Маршрутизация команд")
+  Component(PayMan, "Payment manager", "Обработка команд/информации")
+  Component(DBPayment, "Payments Database", "PostgreSQL", "Чтение/запись данных")
+}
+
+System_Ext(hscontroller, "Heating system controller", "Управляет системой отопления в доме")
+System_Ext(tsensor, "Temperature sensor", "Замеряет текущую температуру в доме")
+System_Ext(lcontroller, "Light system controller", "Управляет системой освещения в доме")
+System_Ext(lsensor, "Light sensor", "Измеряет освещенность")
+System_Ext(gcontroller, "Gate controller", "Открывает или закрывает ворота")
+System_Ext(videoreg, "Video registrator", "Внешняя камера для видеонаблюдения")
+System_Ext(paysystem, "Payment System", "Внешний сервис обработки платежей")
+System_Ext(sms, "SMS ", "Отправка SMS пользователю")
+
+Rel(user, MobileApp, "Включает/выключает отопление, свет, открывает/закрывает ворота; Просматривает видеотрансляцию он-лайн; Подключает новые устройства; Устанавливает желаемую температуру; Просматривает данные о температуре; Оплачивает сервисы")
+Rel(user, Host, "Включает/выключает отопление, свет, открывает/закрывает ворота; Просматривает видеотрансляцию он-лайн; Подключает новые устройства; Устанавливает желаемую температуру; Просматривает данные о температуре; Оплачивает сервисы")
+Rel(admin,Adminka,"Администрирует систему")
+Rel(Host,AuthComp,"Авторизация и аутентификация")
+Rel(Host,UserComp,"Создание/обновление/просмотр данных пользователя")
+Rel(Host,HeatComp,"Запрос к системе отопления")
+Rel(Host,TempComp,"Запрос к датчику температуры")
+Rel(Host,GateComp,"Открыть/закрыть ворота")
+Rel(Host,LightControlComp,"Включить/выключить свет")
+Rel(Host,VideoComp,"Начать/остановить видеотрансляцию")
+Rel(Host,LightComp,"Запрос к датчику света")
+Rel(Host,Payments,"Управление платежами")
+Rel(Host,DevComp,"Создание/обновление/просмотр данных о подлюченных устройствах ")
+Rel(McFrontends,APIGW,"Запросы/ответы пользователям")
+Rel(AuthComp,APIGW,"Обработка запроса/ответ")
+Rel(UserComp,APIGW,"Обработка запроса/ответ")
+Rel(HeatComp,APIGW,"Обработка запроса/ответ")
+Rel(TempComp,APIGW,"Обработка запроса/ответ")
+Rel(GateComp,APIGW,"Обработка запроса/ответ")
+Rel(LightControlComp,APIGW,"Обработка запроса/ответ")
+Rel(VideoComp,APIGW,"Обработка запроса/ответ")
+Rel(LightComp,APIGW,"Обработка запроса/ответ")
+Rel(Payments,APIGW,"Обработка запроса/ответ")
+Rel(DevComp,APIGW,"Обработка запроса/ответ")
+Rel(MobileApp, APIGW, "Запросы/ответы пользователям")
+Rel(APIGW, Kafka, "Обработка и маршрутизация запросов/ответов пользователям")
+Rel(Kafka,APIHeat, "Команды управления устройствами просмотр состояния от пользователя")
+Rel(APIHeat,HeatRule, "Маршрутизация команд управления")
+Rel(APIHeat,HeatStat, "Маршрутизация передачи данных об изменении состояния")
+Rel(HeatRule, HeatRepo,"Запрос на чтение/запись БД")
+Rel(HeatStat, HeatRepo,"Запрос на чтение/запись БД")
+Rel(HeatRepo,DBHeat,"Чтение/запись БД")
+Rel(Kafka,McRuleLight, "Команды управления устройствами просмотр состояния от пользователя")
+Rel(Kafka,McRuleGate, "Команды управления устройствами просмотр состояния от пользователя")
+Rel(Kafka,APITemp, "Запрос данных о температуре от пользователя")
+Rel(APITemp, TempContr, "Маршрутизация запроса/ответа")
+Rel(TempContr,DBTemp, "Чтение/запись БД")
+Rel(Kafka,McContLight, "Запрос данных от пользователя")
+Rel(Kafka,McVideo, "Управление видеотрансляцией")
+Rel(Kafka,APIUser, "Создание/обновление данных о пользователях")
+Rel(APIUser, UserData, "Маршрутизация запроса/ответа")
+Rel(UserData, DBUser, "Чтение/запись БД")
+Rel(APIGW,APIUserAAA, "Авторизация, аутентификация и аудит пользователей")
+Rel(APIUserAAA, UserAAA, "Маршрутизация запроса/ответа")
+Rel(UserAAA, DBUserAAA, "Чтение/запись БД")
+Rel(Kafka, APIDevice, "Создание/обновление данных о подключенных устройствах")
+Rel(APIDevice, DeviceMan, "Маршрутизация запроса/ответа")
+Rel(DeviceMan, DBDevices, "Чтение/запись БД")
+Rel(Kafka,APINotif, "Обработка нотификаций пользователю")
+Rel(APINotif, NotifMan, "Маршрутизация запроса/ответа об изменении состояния")
+Rel(NotifMan, DBNotif, "Чтение/запись БД")
+Rel(Kafka,APIPayment, "Управление платежами")
+Rel(APIPayment, PayMan, "Маршрутизация запроса/ответа об изменении состояния")
+Rel(PayMan, DBPayment, "Чтение/запись БД")
+Rel(Kafka,Adminka, "Логи, данные мониторинга")
+Rel(Kafka,hscontroller,"Управляет контроллером отопления, направляет команды пользователя")
+Rel(Kafka,tsensor,"Получает информацию о температуре")
+Rel(Kafka,lcontroller,"Включает/выключает свет, направляет команды пользователя")
+Rel(Kafka,lsensor,"Получает информацию об освещенности")
+Rel(Kafka,gcontroller,"Открывает/закрывает ворота, направляет команды пользователя")
+Rel(Kafka,videoreg,"Видеотрансляция он-лайн")
+Rel(Kafka,paysystem,"Управление оплатами пользователя через внешний платежный шлюз")
+Rel(Kafka,sms,"Отправка sms нотификаций через внешний sms-шлюз")
+
+@enduml

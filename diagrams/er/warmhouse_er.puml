@@ -1,0 +1,61 @@
+@startuml WarmhouseEr
+title Warmhouse 2.0 ER fragmet Diagram
+
+top to bottom direction
+
+entity User {
+  +user_id [PK]
+  --
+  name: varchar(100)
+  email: varchar(255)
+  password_hash: varchar(255)
+  created_at: timestamp
+}
+
+entity House {
+  +house_id [PK]
+  --
+  address: varchar(255)
+  owner_id [FK]
+  created_at: timestamp
+}
+
+entity Device {
+  +device_id [PK]
+  --
+  device_type: varchar(50)
+  serial_number: varchar(100)
+  house_id [FK]
+  installed_at: timestamp
+}
+
+entity DeviceTelemetry {
+  +telemetry_id [PK]
+  --
+  device_id [FK]
+  telemetry_data: text
+  recorded_at: timestamp
+}
+
+
+User ||--o{ House : "owns"
+House ||--o{ Device : "contains"
+Device ||--o{ DeviceTelemetry : "generates"
+
+
+note right of User
+  Пользователь может владеть
+  несколькими домами.
+end note
+
+note right of Device
+  Устройство установлено
+  в одном доме.
+end note
+
+note right of DeviceTelemetry
+  Телеметрия генерируется
+  устройством.
+end note
+
+@enduml

@@ -1,0 +1,67 @@
+@startuml WarmhouseContainer
+title Warmhouse 2.0 Container Diagram
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User", "Управляет контроллерами, подключает новые устройства, просматривает видеотрансляцию и данные с датчиков")
+Person(admin, "Admin", "Администрирует систему")
+System(WarmhouseSystem, "Warmhouse System", "Система управляет устройствами отопления, света, ворот и видеонаблюдения в доме клиента, мониторит данные с датчиков, биллингует услуги и управляет платежами")
+
+Container_Boundary(WarmhouseSystem, "Warmhouse System") {
+  Container(MobileApp, "Mobile Application", "Kotlin, Swift", "Обработка взаймодействий с пользователем")
+  Container(McFrontends, "Microfrontends/ModuleFederation", "React", "Обработка взаимодействий с пользователями")
+  Container(APIGW, "API GateWay", "Kong", "Обработка и маршрутизация запросов/ответов пользователям")
+  Container(Kafka, "Kafka", "Обеспечение и балансировка внутрисистемного ассинхронного взаимодействия")
+  Container(McRuleHeat, "MicroService Rule Heating", "Node.js", "Обработка запросов пользователей")
+  Container(McRuleLight, "MicroService Rule Light", "Node.js", "Обработка запросов пользователей")
+  Container(McRuleGate, "MicroService Rule Gate", "Node.js", "Обработка запросов пользователей")
+  Container(McContTemp, "MicroService Control Temperature", "Node.js", "Обработка запросов пользователей")
+  Container(McContLight, "MicroService Control Light", "Node.js", "Обработка запросов пользователей")
+  Container(McVideo, "MicroService Video", "Управление видеотрансляцией")
+  Container(McUserProf, "MicroService UserProfile", "Node.js", "Управление данными о пользователях")
+  Container(McUserAAA, "MicroService AAA", "Node.js", "Авторизация, аутентификация и аудит пользователей")
+  Container(McDeviceProf, "MicroService DeviceProfile", "Node.js", "Управление данными о подключенных устройствах и сенсорах")
+  Container(McNotif, "MicroService Notification", "Node.js", "Нотификация пользователю")
+  Container(PaymentService, "Payment Service", "Node.js", "Управление платежами")
+  Container(Adminka, "Administraton", "elasticsearch/grafana", "Логи, мониторинг, метрики, анализ, визуализация")
+}
+
+System_Ext(hscontroller, "Heating system controller", "Управляет системой отопления в доме")
+System_Ext(tsensor, "Temperature sensor", "Замеряет текущую температуру в доме")
+System_Ext(lcontroller, "Light system controller", "Управляет системой освещения в доме")
+System_Ext(lsensor, "Light sensor", "Измеряет освещенность")
+System_Ext(gcontroller, "Gate controller", "Открывает или закрывает ворота")
+System_Ext(videoreg, "Video registrator", "Внешняя камера для видеонаблюдения")
+System_Ext(paysystem, "Payment System", "Внешний сервис обработки платежей")
+System_Ext(sms, "SMS ", "Отправка SMS пользователю")
+
+Rel(user, MobileApp, "Включает/выключает отопление, свет, открывает/закрывает ворота; Просматривает видеотрансляцию он-лайн; Подключает новые устройства; Устанавливает желаемую температуру; Просматривает данные о температуре; Оплачивает сервисы")
+Rel(user, McFrontends, "Включает/выключает отопление, свет, открывает/закрывает ворота; Просматривает видеотрансляцию он-лайн; Подключает новые устройства; Устанавливает желаемую температуру; Просматривает данные о температуре; Оплачивает сервисы")
+Rel(admin,Adminka,"Администрирует систему")
+Rel(McFrontends,APIGW,"Запросы/ответы пользователям")
+Rel(MobileApp, APIGW, "Запросы/ответы пользователям")
+Rel(APIGW, Kafka, "Обработка и маршрутизация запросов/ответов пользователям")
+Rel(Kafka,McRuleHeat, "Команды управления устройствами просмотр состояния от пользователя")
+Rel(Kafka,McRuleLight, "Команды управления устройствами просмотр состояния от пользователя")
+Rel(Kafka,McRuleGate, "Команды управления устройствами просмотр состояния от пользователя")
+Rel(Kafka,McContTemp, "Запрос данных о температуре от пользователя")
+Rel(Kafka,McContLight, "Запрос данных от пользователя")
+Rel(Kafka,McVideo, "Управление видеотрансляцией")
+Rel(Kafka,McUserProf, "Создание/обновление данных о пользователях")
+Rel(APIGW,McUserAAA, "Авторизация, аутентификация и аудит пользователей")
+Rel(Kafka,McDeviceProf, "Создание/обновление данных о подключенных устройствах")
+Rel(Kafka,McNotif, "Обработка нотификаций пользователю")
+Rel(Kafka,PaymentService, "Управление платежами")
+Rel(Kafka,Adminka, "Логи, данные мониторинга")
+Rel(Kafka,hscontroller,"Управляет контроллером отопления, направляет команды пользователя")
+Rel(Kafka,tsensor,"Получает информацию о температуре")
+Rel(Kafka,lcontroller,"Включает/выключает свет, направляет команды пользователя")
+Rel(Kafka,lsensor,"Получает информацию об освещенности")
+Rel(Kafka,gcontroller,"Открывает/закрывает ворота, направляет команды пользователя")
+Rel(Kafka,videoreg,"Видеотрансляция он-лайн")
+Rel(Kafka,paysystem,"Управление оплатами пользователя через внешний платежный шлюз")
+Rel(Kafka,sms,"Отправка sms нотификаций через внешний sms-шлюз")
+
+@enduml
